@@ -1,10 +1,10 @@
 # build stage
-FROM golang:1.16-alpine3.15 AS build-env
+FROM golang:1.17-buster AS build-env
 
 ENV SRC_DIR $GOPATH/src/github.com/bettercap/bettercap
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apk add --no-cache ca-certificates
-RUN apk add --no-cache bash iptables wireless-tools build-base libpcap-dev libusb-dev linux-headers libnetfilter_queue-dev git
+RUN apt update && apt-get install -y --no-install-recommends build-essential libpcap-dev libusb-1.0-0-dev libnetfilter-queue-dev
 
 WORKDIR $SRC_DIR
 ADD . $SRC_DIR
@@ -15,9 +15,8 @@ RUN mkdir -p /usr/local/share/bettercap
 RUN git clone https://github.com/bettercap/caplets /usr/local/share/bettercap/caplets
 
 # final stage
-FROM alpine:3.15
-RUN apk add --no-cache ca-certificates
-RUN apk add --no-cache bash iproute2 libpcap libusb-dev libnetfilter_queue wireless-tools
+FROM golang:1.17-buster
+RUN apt update && apt install -y build-essential libpcap-dev libusb-1.0-0-dev libnetfilter-queue-dev
 COPY --from=build-env /go/src/github.com/bettercap/bettercap/bettercap /app/
 COPY --from=build-env /usr/local/share/bettercap/caplets /app/
 WORKDIR /app
