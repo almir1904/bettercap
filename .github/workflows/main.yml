@@ -40,5 +40,5 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           platforms: linux/amd64, linux/arm64
-          tags: ghcr.io/almir1904/bettercap:latest
+          tags: ghcr.io/almir1904/bettercap:dev
           labels: ${{ steps.meta.outputs.labels }}
